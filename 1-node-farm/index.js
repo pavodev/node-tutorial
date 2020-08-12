@@ -1,6 +1,10 @@
+// core modules
 const fs = require("fs");
 const http = require("http");
 const url = require("url");
+
+// own modules
+const replaceTemplate = require("./modules/replaceTemplate");
 
 /* 
 ///////////////////////////
@@ -52,24 +56,53 @@ fs.readFile("./txt/startttt.txt", "utf-8", (err, data1) => {
 */
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const dataObj = JSON.parse(data);
+
+const overviewTemp = fs.readFileSync(
+  `${__dirname}/templates/overview.html`,
+  "utf-8"
+);
+const productTemp = fs.readFileSync(
+  `${__dirname}/templates/product.html`,
+  "utf-8"
+);
+const cardTemp = fs.readFileSync(
+  `${__dirname}/templates/template-card.html`,
+  "utf-8"
+);
+
 /*
   Each time a request comes to the server, this function will be called;
 */
 const server = http.createServer((req, res) => {
-  console.log(req.url); // we get '/' and '/favicon.ico' (the browser automatically makes it)
+  const { query, pathname } = url.parse(req.url, true);
 
-  // request url
-  const pathName = req.url;
+  // Overview page
+  if (pathname === "/" || pathname === "/overview") {
+    res.writeHead(200, {
+      "Content-Type": "text/html",
+    });
 
-  if (pathName === "/" || pathName === "/overview") {
-    res.end("this is the overview");
-  } else if (pathName === "/product") {
-    res.end("this is the product");
-  } else if (pathName === "/api") {
+    const cardsHtml = dataObj
+      .map((el) => replaceTemplate(cardTemp, el))
+      .join("");
+    const output = overviewTemp.replace("{%PRODUCT_CARD%}", cardsHtml);
+
+    res.end(output);
+
+    // Product page
+  } else if (pathname === "/product") {
+    const product = dataObj[query.id];
+    const output = replaceTemplate(productTemp, product);
+    res.end(output);
+
+    // API
+  } else if (pathname === "/api") {
     res.writeHead(200, {
       "Content-Type": "application/json",
     });
     res.end(data);
+
+    // Not found
   } else {
     res.writeHead(404, {
       "Content-type": "text/html",
