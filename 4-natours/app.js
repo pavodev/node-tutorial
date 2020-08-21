@@ -76,6 +76,42 @@ app.post('/api/v1/tours', (req, res) => {
   // res.send('Done');
 });
 
+app.patch('/api/v1/tours/:id', (req, res) => {
+  const id = req.params.id;
+
+  if (id > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour: '<Updated tour here...>',
+    },
+  });
+  // will be implemented in the MongoDB section
+});
+
+app.delete('/api/v1/tours/:id', (req, res) => {
+  const id = req.params.id;
+
+  if (id > tours.length) {
+    return res.status(404).json({
+      status: 'fail',
+      message: 'Invalid ID',
+    });
+  }
+
+  res.status(204).json({
+    // no content code
+    status: 'success',
+    data: null,
+  });
+  // will be implemented in the MongoDB section
+});
 // Start Listening
 
 const port = 3000;
