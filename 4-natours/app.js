@@ -6,26 +6,15 @@ const app = express(); // adds methods to app
 // Middleware: function that can modify incoming request data.
 app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.status(200).json({
-    message: 'Hello from the server side‼',
-    app: 'Node-tutorial, Natours project',
-  });
-});
-
-app.post('/', (req, res) => {
-  res.send('You can post to this endpoint');
-});
-
 // Data getters
 
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
-// Route handlers
+// Handlers
 
-app.get('/api/v1/tours', (req, res) => {
+const getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
     results: tours.length,
@@ -33,9 +22,9 @@ app.get('/api/v1/tours', (req, res) => {
       tours,
     },
   });
-});
+};
 
-app.get('/api/v1/tours/:id', (req, res) => {
+const getTour = (req, res) => {
   console.log(req.params);
 
   const id = req.params.id * 1; // trick
@@ -53,9 +42,9 @@ app.get('/api/v1/tours/:id', (req, res) => {
       tour,
     },
   });
-});
+};
 
-app.post('/api/v1/tours', (req, res) => {
+const createTour = (req, res) => {
   const newId = tours[tours.length - 1].id + 1;
   const newTour = Object.assign({ id: newId }, req.body);
 
@@ -74,9 +63,9 @@ app.post('/api/v1/tours', (req, res) => {
   );
 
   // res.send('Done');
-});
+};
 
-app.patch('/api/v1/tours/:id', (req, res) => {
+const updateTour = (req, res) => {
   const id = req.params.id;
 
   if (id > tours.length) {
@@ -93,9 +82,9 @@ app.patch('/api/v1/tours/:id', (req, res) => {
     },
   });
   // will be implemented in the MongoDB section
-});
+};
 
-app.delete('/api/v1/tours/:id', (req, res) => {
+const deleteTour = (req, res) => {
   const id = req.params.id;
 
   if (id > tours.length) {
@@ -111,7 +100,23 @@ app.delete('/api/v1/tours/:id', (req, res) => {
     data: null,
   });
   // will be implemented in the MongoDB section
-});
+};
+
+// Routes
+
+// app.get('/api/v1/tours', getAllTours);
+// app.post('/api/v1/tours', createTour);
+// app.get('/api/v1/tours/:id', getTour);
+// app.patch('/api/v1/tours/:id', updateTour);
+// app.delete('/api/v1/tours/:id', deleteTour);
+
+app.route('/api/v1/tours').get(getAllTours).post(createTour);
+app
+  .route('/api/v1/tours/:id')
+  .get(getTour)
+  .patch(updateTour)
+  .delete(deleteTour);
+
 // Start Listening
 
 const port = 3000;
