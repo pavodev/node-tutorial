@@ -4,7 +4,18 @@ const express = require('express');
 const app = express(); // adds methods to app
 
 // Middleware: function that can modify incoming request data.
-app.use(express.json());
+app.use(express.json()); // use: adds a middleware to the middleware stack
+
+// Define our own middlewares
+app.use((req, res, next) => {
+  console.log('Hello from our own middleware 😉');
+  next();
+});
+
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
 
 // Data getters
 
@@ -15,9 +26,11 @@ const tours = JSON.parse(
 // Handlers
 
 const getAllTours = (req, res) => {
+  console.log(req.requestTime);
   res.status(200).json({
     status: 'success',
     results: tours.length,
+    requestedAt: req.requestTime,
     data: {
       tours,
     },
