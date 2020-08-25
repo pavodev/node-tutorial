@@ -17,6 +17,18 @@ exports.checkId = (req, res, next, val) => {
   next();
 };
 
+exports.checkBody = (req, res, next) => {
+  // check if the body contains the name and price property
+  if (!req.body.name || !req.body.price) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'Bad request, missing name or price',
+    });
+  }
+
+  next();
+};
+
 // HANDLERS
 
 exports.getAllTours = (req, res) => {
