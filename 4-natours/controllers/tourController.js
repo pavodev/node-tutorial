@@ -1,21 +1,8 @@
-const fs = require('fs');
+const Tour = require('../models/tourModel');
 
-const tours = JSON.parse(
-  fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
-);
-
-exports.checkId = (req, res, next, val) => {
-  console.log(`Tour id is: ${val}`);
-
-  if (val > tours.length) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid ID',
-    });
-  }
-
-  next();
-};
+// const tours = JSON.parse(
+//   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
+// );
 
 exports.checkBody = (req, res, next) => {
   // check if the body contains the name and price property
@@ -35,54 +22,59 @@ exports.getAllTours = (req, res) => {
   console.log(req.requestTime);
   res.status(200).json({
     status: 'success',
-    results: tours.length,
-    requestedAt: req.requestTime,
-    data: {
-      tours,
-    },
+    // results: tours.length,
+    // requestedAt: req.requestTime,
+    // data: {
+    //   tours,
+    // },
   });
 };
 
 exports.getTour = (req, res) => {
   console.log(req.params);
 
-  const id = req.params.id * 1; // trick
+  // const id = req.params.id * 1; // trick
 
-  const tour = tours.find((el) => el.id === id);
+  // const tour = tours.find((el) => el.id === id);
 
-  res.status(200).json({
-    status: 'success',
-    // results: tours.length,
-    data: {
-      tour,
-    },
-  });
+  // res.status(200).json({
+  //   status: 'success',
+  //   // results: tours.length,
+  //   data: {
+  //     tour,
+  //   },
+  // });
 };
 
 exports.createTour = (req, res) => {
-  const newId = tours[tours.length - 1].id + 1;
-  const newTour = Object.assign({ id: newId }, req.body);
+  res.status(201).json({
+    status: 'success',
+    // data: {
+    //   tour: newTour,
+    // },
+  }); // 201 CREATED
 
-  tours.push(newTour);
-  fs.writeFile(
-    `${__dirname}/dev-data/data/tours-simple.json`,
-    JSON.stringify(tours),
-    (err) => {
-      res.status(201).json({
-        status: 'success',
-        data: {
-          tour: newTour,
-        },
-      }); // 201 CREATED
-    }
-  );
+  // const newId = tours[tours.length - 1].id + 1;
+  // const newTour = Object.assign({ id: newId }, req.body);
+
+  // tours.push(newTour);
+  // fs.writeFile(
+  //   `${__dirname}/dev-data/data/tours-simple.json`,
+  //   JSON.stringify(tours),
+  //   (err) => {
+  //     res.status(201).json({
+  //       status: 'success',
+  //       data: {
+  //         tour: newTour,
+  //       },
+  //     }); // 201 CREATED
+  //   }
+  // );
 
   // res.send('Done');
 };
 
 exports.updateTour = (req, res) => {
-  const id = req.params.id;
-
   res.status(200).json({
     status: 'success',
     data: {
@@ -93,8 +85,6 @@ exports.updateTour = (req, res) => {
 };
 
 exports.deleteTour = (req, res) => {
-  const id = req.params.id;
-
   res.status(204).json({
     // no content code
     status: 'success',
