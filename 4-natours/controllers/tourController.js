@@ -2,32 +2,42 @@ const Tour = require('../models/tourModel');
 
 // HANDLERS
 
-exports.getAllTours = (req, res) => {
-  console.log(req.requestTime);
-  res.status(200).json({
-    status: 'success',
-    // results: tours.length,
-    // requestedAt: req.requestTime,
-    // data: {
-    //   tours,
-    // },
-  });
+exports.getAllTours = async (req, res) => {
+  try {
+    const tours = await Tour.find();
+
+    res.status(200).json({
+      status: 'success',
+      results: tours.length,
+      data: {
+        tours,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: "fail",
+      message: err
+    })
+  }
 };
 
-exports.getTour = (req, res) => {
-  console.log(req.params);
+exports.getTour = async (req, res) => {
+  try {
+    const tour = await Tour.findById(req.params.id);
+    // Tour.finOne({ _id: req.params.id }); // --> same result as above
 
-  // const id = req.params.id * 1; // trick
-
-  // const tour = tours.find((el) => el.id === id);
-
-  // res.status(200).json({
-  //   status: 'success',
-  //   // results: tours.length,
-  //   data: {
-  //     tour,
-  //   },
-  // });
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour,
+      },
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: "fail",
+      message: err
+    })
+  }
 };
 
 exports.createTour = async (req, res) => {
@@ -53,21 +63,47 @@ exports.createTour = async (req, res) => {
   }
 };
 
-exports.updateTour = (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour: '<Updated tour here...>',
-    },
-  });
-  // will be implemented in the MongoDB section
+exports.updateTour = async (req, res) => {
+  try {
+
+    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+      new: true, // the updated document will be returned
+      runValidators: true
+    });
+
+    console.log("Tour", tour);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour,
+      },
+    });
+
+  } catch (err) {
+    res.status(404).json({
+      status: "fail",
+      message: err
+    })
+  }
 };
 
-exports.deleteTour = (req, res) => {
-  res.status(204).json({
-    // no content code
-    status: 'success',
-    data: null,
-  });
-  // will be implemented in the MongoDB section
+exports.deleteTour = async (req, res) => {
+  try {
+
+    const tour = await Tour.findByIdAndDelete(req.params.id);
+
+    console.log("Tour", tour);
+
+    res.status(204).json({
+      status: 'success',
+      data: null
+    });
+
+  } catch (err) {
+    res.status(404).json({
+      status: "fail",
+      message: err
+    })
+  }
 };
