@@ -26,9 +26,9 @@ exports.getAllTours = async (req, res) => {
     let queryString = JSON.stringify(queryObj);
 
     /*
-      () --> includes the operators
-      '/b' --> match the exact words (operators)
-      '/g' --> must happen multiple time (without the g, it replaces only the first occurence)
+      ()    --> includes the operators
+      '/b'  --> match the exact words (operators)
+      '/g'  --> must happen multiple time (without the g, it replaces only the first occurence)
 
       The callback appends $ to the matched string
     */
