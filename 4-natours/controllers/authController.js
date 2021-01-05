@@ -18,6 +18,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
     passwordChangedAt: req.body.passwordChangedAt,
+    role: req.body.role,
   });
 
   const token = signedToken(newUser._id);
@@ -99,7 +100,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // 4) Check if user changed password after the token was issued
 
-  if (currentUser.changedPasswordAfter(decoded.iat)) {
+  if (await currentUser.changedPasswordAfter(decoded.iat)) {
     return next(
       new AppError('User recently changed password! Please log in again', 401)
     );
@@ -110,3 +111,28 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
+// ...roles creates an array of all the arguments that we specify
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    // the current user has been stored on the request object in the protect method above
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError('You do not have permission to perform this action', 403)
+      );
+    }
+
+    next();
+  };
+};
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  // 1) Get user based on POSTed email
+  const user = await User.findOne({ email: req.body.email });
+
+  // 2) Generate the random reset token
+
+  // 3) send it to user's email
+});
+
+exports.resetPassword = (req, res, next) => {};
