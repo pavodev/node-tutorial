@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+// const User = require('./userModel');
 
 // Schema
 const tourSchema = new mongoose.Schema(
@@ -105,6 +106,17 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
+    /* Embedding: the problem is that if for some reason a user changes his e-mail, we would need to update all the tours that embed that user..
+     The solution is to use child-referencing.. */
+    // guides: Array,
+
+    /* Child referencing */
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     toJSON: { virtuals: true }, // include virtual properties into the JSON output
@@ -128,6 +140,14 @@ tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next(); // just like express's middlewares
 });
+
+/* Embedding: the problem is that if for some reason a user changes his e-mail, we would need to update all the tours that embed that user..
+     The solution is to use child-referencing.. */
+// tourSchema.pre('save', async function (next) {
+//   const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+//   this.guides = await Promise.all(guidesPromises);
+//   next(); // just like express's middlewares
+// });
 
 // tourSchema.pre('save', function (next) {
 //   console.log('will save document...');
@@ -155,6 +175,15 @@ tourSchema.pre(/^find/, function (next) {
   });
 
   this.start = Date.now();
+  next();
+});
+
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  }); // the populate function fills up the fileds that reference a child entity (for example a user inside a tour). This only happens inside the query, we don't touch the database!
+
   next();
 });
 
