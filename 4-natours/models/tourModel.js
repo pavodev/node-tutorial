@@ -125,9 +125,17 @@ const tourSchema = new mongoose.Schema(
 );
 
 // VIRTUAL PROPERTIES
+
 // this value will be created each time we get a tour document from the database
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7; // this -> is the current document
+});
+
+// VIRTUAL POPULATION
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
 });
 
 // DOCUMENT MIDDLEWARE
