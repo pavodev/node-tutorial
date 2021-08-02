@@ -20,7 +20,7 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => {
-    console.log('DB connection successful');
+    console.log('DB connection successful!');
   });
 
 // READ JSON FILE
