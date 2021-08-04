@@ -85,6 +85,7 @@ exports.getAll = (Model) =>
       .limitFields()
       .paginate();
     const docs = await features.query;
+    // const docs = await features.query.explain();
 
     // using the method below would have resulted in a huge method concatenation
     // const query = await Model.find()
