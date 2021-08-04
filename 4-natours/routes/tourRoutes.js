@@ -1,6 +1,7 @@
 const express = require('express');
 const tourController = require('../controllers/tourController');
 const authController = require('../controllers/authController');
+const reviewRouter = require('./reviewRoutes');
 
 // ROUTES
 
@@ -28,5 +29,19 @@ router
     authController.restrictTo('admin', 'lead-guide'),
     tourController.deleteTour
   );
+
+// NESTED ROUTES
+
+// If the path corresponds to the one passed as argument, re-route to the reviewRouter
+router.use('/:tourId/reviews', reviewRouter);
+
+// POST /tour/234/reviews
+// router
+//   .route('/:tourId/reviews')
+//   .post(
+//     authController.protect,
+//     authController.restrictTo('user'),
+//     reviewController.createReview
+//   );
 
 module.exports = router;
