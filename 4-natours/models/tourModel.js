@@ -130,6 +130,7 @@ const tourSchema = new mongoose.Schema(
 // tourSchema.index({ price: 1 }); // 1: ascending, -1: descending
 tourSchema.index({ price: 1, ratingsAverage: -1 });
 tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: '2dsphere' }); // this index is necessary in order to use geospatial queries
 
 // VIRTUAL PROPERTIES
 
