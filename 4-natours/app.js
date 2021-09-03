@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
@@ -13,6 +14,15 @@ const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 
 const app = express(); // adds methods to app
+
+/***************** Template Engine ***************/
+
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, './views')); // path relative to where we launch the application!!
+
+/***************** SERVING STATIC FILES *****************/
+
+app.use(express.static(path.join(__dirname, 'public'))); // 127.0.0.1/overview.html, public "becomes" the root
 
 /*************** Global Middlewares **************/
 
@@ -57,10 +67,6 @@ app.use(
   })
 );
 
-/***************** SERVING STATIC FILES *****************/
-
-app.use(express.static(`${__dirname}/public`)); // 127.0.0.1/overview.html, public "becomes" the root
-
 app.use((req, res, next) => {
   console.log('Hello from our own middleware 😉');
   next();
@@ -73,6 +79,10 @@ app.use((req, res, next) => {
 });
 
 /*************** Routers **************/
+
+app.get('/', (req, res) => {
+  res.status(200).render('base');
+});
 
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);

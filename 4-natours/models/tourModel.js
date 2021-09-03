@@ -212,13 +212,13 @@ tourSchema.post(/^find/, function (documents, next) {
 /*
   We can also exclude VIP tours from aggregations!
 */
-tourSchema.pre('aggregate', function (next) {
-  this.pipeline().unshift({
-    $match: { secretTour: { $ne: true } },
-  }); // put at the beginning of the array
+// tourSchema.pre('aggregate', function (next) {
+//   this.pipeline().unshift({
+//     $match: { secretTour: { $ne: true } },
+//   }); // put at the beginning of the array
 
-  next();
-});
+//   next();
+// });
 
 // Model
 const Tour = mongoose.model('Tour', tourSchema);
