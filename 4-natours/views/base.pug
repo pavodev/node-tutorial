@@ -3,9 +3,9 @@ html
   head
     meta(charset='UTF-8')
     meta(name='viewport' content='width=device-width, initial-scale=1.0')
-    title Natours | Exciting tours for adventurous people
-    link(rel='stylesheet' href='css/style.css')
-    link(rel='shortcut icon' type='image/png' href='img/favicon.png')
+    title Natours | #{title}
+    link(rel='stylesheet' href='/css/style.css')
+    link(rel='shortcut icon' type='image/png' href='/img/favicon.png')
     link(rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,300i,700')
 
   body 
@@ -13,8 +13,8 @@ html
     include _header
 
     // CONTENT
-    section.overview
-      h1= tour
+    block content
+      h1 This is a placeholder header
 
     // FOOTER
     include _footer
