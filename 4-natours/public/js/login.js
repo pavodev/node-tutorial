@@ -33,7 +33,7 @@ export const logout = async () => {
     });
 
     if (res.data.status === 'success') {
-      location.reload(true); // true forces a reload from the server and not from the cash
+      location.assign('/'); // true forces a reload from the server and not from the cash
     }
   } catch {
     showAlert('error', 'Error logging out! Try again.');
