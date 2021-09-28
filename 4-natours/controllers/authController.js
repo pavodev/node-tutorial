@@ -73,6 +73,15 @@ exports.login = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
+exports.logout = (req, res) => {
+  res.cookie('jwt', 'loggedout', {
+    expires: new Date(Date.now() + 10 * 1000),
+    httpOnly: true,
+  });
+
+  res.status(200).json({ status: 'success' });
+};
+
 exports.protect = catchAsync(async (req, res, next) => {
   let token;
 
@@ -143,42 +152,45 @@ exports.restrictTo = (...roles) => {
 };
 
 // Only for rendered pages, no errors!
-exports.isLoggedIn = catchAsync(async (req, res, next) => {
-  // 1) Check token
+exports.isLoggedIn = async (req, res, next) => {
+  try {
+    // 1) Check token
 
-  if (req.cookies.jwt) {
-    /* 
+    if (req.cookies.jwt) {
+      /* 
     jwt.verify gets a callback as third argument but as we want to keep using async/await, the jwt.verify function must be converted to a promise. 
     To do that we use the built-in node promisify function. The second parenthesis calls the function.
   */
-    const decoded = await promisify(jwt.verify)(
-      req.cookies.jwt,
-      process.env.JWT_SECRET
-    );
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET
+      );
 
-    // 2) Check if user still exists
+      // 2) Check if user still exists
 
-    const currentUser = await User.findById(decoded.id);
+      const currentUser = await User.findById(decoded.id);
 
-    if (!currentUser) {
+      if (!currentUser) {
+        return next();
+      }
+
+      // 4) Check if user changed password after the token was issued
+
+      if (await currentUser.changedPasswordAfter(decoded.iat)) {
+        return next();
+      }
+
+      // Grant access to the protected route!
+
+      // There is a logged in user
+      res.locals.user = currentUser; // we pass data to the pug templates
       return next();
     }
-
-    // 4) Check if user changed password after the token was issued
-
-    if (await currentUser.changedPasswordAfter(decoded.iat)) {
-      return next();
-    }
-
-    // Grant access to the protected route!
-
-    // There is a logged in user
-    res.locals.user = currentUser; // we pass data to the pug templates
+  } catch (err) {
     return next();
   }
-
   next();
-});
+};
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   // 1) Get user based on POSTed email
