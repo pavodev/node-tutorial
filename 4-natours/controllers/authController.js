@@ -83,6 +83,8 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
 
   if (!token) {
@@ -139,6 +141,44 @@ exports.restrictTo = (...roles) => {
     next();
   };
 };
+
+// Only for rendered pages, no errors!
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  // 1) Check token
+
+  if (req.cookies.jwt) {
+    /* 
+    jwt.verify gets a callback as third argument but as we want to keep using async/await, the jwt.verify function must be converted to a promise. 
+    To do that we use the built-in node promisify function. The second parenthesis calls the function.
+  */
+    const decoded = await promisify(jwt.verify)(
+      req.cookies.jwt,
+      process.env.JWT_SECRET
+    );
+
+    // 2) Check if user still exists
+
+    const currentUser = await User.findById(decoded.id);
+
+    if (!currentUser) {
+      return next();
+    }
+
+    // 4) Check if user changed password after the token was issued
+
+    if (await currentUser.changedPasswordAfter(decoded.iat)) {
+      return next();
+    }
+
+    // Grant access to the protected route!
+
+    // There is a logged in user
+    res.locals.user = currentUser; // we pass data to the pug templates
+    return next();
+  }
+
+  next();
+});
 
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   // 1) Get user based on POSTed email
