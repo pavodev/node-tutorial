@@ -7,14 +7,13 @@ mixin navItem(link, text, icon, active)
         use(xlink:href=`img/icons.svg#icon-${icon}`)
       | #{text}
 
-
 block content
   main.main
     .user-view
       nav.user-view__menu
         ul.side-nav
           +navItem('#', 'Settings', 'settings', true)
-          +navItem('#', 'My bookings', 'briefcase')
+          +navItem('/my-tours', 'My bookings', 'briefcase')
           +navItem('#', 'My reviews', 'star')
           +navItem('#', 'Billing', 'credit-card')
 
@@ -22,7 +21,7 @@ block content
           .admin-nav
             h5.admin-nav__heading Admin
             ul.side-nav
-              +navItem('#', 'Manage tours', 'map', true)
+              +navItem('#', 'Manage tours', 'map')
               +navItem('#', 'Manage users', 'users')
               +navItem('#', 'Manage reviews', 'star')
               +navItem('#', 'Manage bookings', 'briefcase')
@@ -31,10 +30,10 @@ block content
         .user-view__form-container
           h2.heading-secondary.ma-bt-md Your account settings
 
-          //- Without API
-          //- form.form.form-user-data(action='/submit-user-data' method='POST')
+          //- WITHOUT API
+          //- form.form.form-user-data(action='/submit-user-data' method='POST' enctype='multipart/form-data')
 
-          //- With API
+          //- WITH API
           form.form.form-user-data
             .form__group
               label.form__label(for='name') Name
@@ -43,8 +42,10 @@ block content
               label.form__label(for='email') Email address
               input#email.form__input(type='email', value=`${user.email}`, required, name='email')
             .form__group.form__photo-upload
-              img.form__user-photo(src=`/img/users/${user.photo}` alt='User photo')
-              a.btn-text(href='') Choose new photo
+              img.form__user-photo(src=`/img/users/${user.photo}`, alt='User photo')
+              input.form__upload(type='file', accept='image/*', id='photo_input', name='photo')
+              label(for='photo_input') Choose new photo
+
             .form__group.right
               button.btn.btn--small.btn--green Save settings
 
