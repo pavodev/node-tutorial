@@ -26,6 +26,7 @@ if (loginForm) {
 
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
+
     login(email, password);
   });
 }
@@ -34,16 +35,17 @@ if (logoutButton) {
   logoutButton.addEventListener('click', logout);
 }
 
-if (userDataForm) {
+if (userDataForm)
   userDataForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    const email = document.getElementById('email').value;
-    const name = document.getElementById('name').value;
+    const form = new FormData();
+    form.append('name', document.getElementById('name').value);
+    form.append('email', document.getElementById('email').value);
+    form.append('photo', document.getElementById('photo_input').files[0]);
 
-    updateSettings({ name, email }, 'data');
+    updateSettings(form, 'data');
   });
-}
 
 if (userPasswordForm) {
   userPasswordForm.addEventListener('submit', async (e) => {
