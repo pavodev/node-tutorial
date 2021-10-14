@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "cors": "^2.8.5",
+    "helmet": "^3.23.3",
+    "multer": "^1.4.3"
+  }
+}
