@@ -12,7 +12,6 @@ process.on('uncaughtException', (err) => {
 });
 
 // Trigger an uncaught expection
-// console.log(x);
 
 dotenv.config({
   path: './config.env',
