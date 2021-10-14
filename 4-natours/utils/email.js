@@ -1,6 +1,7 @@
 const nodemailer = require('nodemailer');
 const pug = require('pug');
 const htmlToText = require('html-to-text');
+const nodemailerSendgrid = require('nodemailer-sendgrid');
 
 module.exports = class Email {
   constructor(user, url) {
@@ -15,10 +16,14 @@ module.exports = class Email {
    * In order to test this functionality I have created a new account on mailtrap.io Mailtrap allows to send email avoiding them to reach the final users.
    */
   newTransport() {
-    if (process.env.NODE_ENV === 'prod') {
+    if (process.env.NODE_ENV.startsWith('p')) {
       // Sendgrid
 
-      return 1;
+      return nodemailer.createTransport(
+        nodemailerSendgrid({
+          apiKey: process.env.SENDGRID_PASSWORD,
+        })
+      );
     }
 
     return nodemailer.createTransport({
